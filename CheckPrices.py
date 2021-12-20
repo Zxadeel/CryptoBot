@@ -4,7 +4,8 @@ from dotenv import load_dotenv
 import json
 
 url = 'https://pro-api.coinmarketcap.com/v1/cryptocurrency/listings/latest'
-api_key = 'a key'
+load_dotenv()
+api_key = os.getenv('COINMARKETCAP_TOKEN')
 parameters = {
   'start':'1',
   'limit':'5000',
