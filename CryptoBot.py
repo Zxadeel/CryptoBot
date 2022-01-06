@@ -13,12 +13,15 @@ TOKEN = os.getenv('DISCORD_TOKEN')
 client = commands.Bot(command_prefix='!')
 '''
 alert_thresholds is a dictionary that should look like this:    
-    {'coin':['minprice', 'maxprice', booleantostartorstopalerts]}
+    {'ctx':the context of the last alert set, 'coin':['minprice', 'maxprice', booleantostartorstopalerts]}
 '''
-alert_thresholds = {}
+alert_thresholds = {'ctx': None}
     
 @client.event
 async def on_ready():
+    """Starts the bot and begins the background task.
+
+    """
     check_alert_prices.start()
     print("CryptoBot has connected to Discord!")
 
@@ -26,11 +29,18 @@ async def on_ready():
 
 @tasks.loop(seconds=15)
 async def check_alert_prices():
+    """A background task that checks the prices and sends an alert to a channel.
+
+    """
     print("background task")
     for k in alert_thresholds:
+        if (k == 'ctx'):
+            continue
         alert = price_alert(k)
-        if alert != "False":
-            print(alert)  #TODO make this send a message to a channel
+        if alert != "False" and alert != "":
+            print(alert)
+            await alert_thresholds['ctx'].send(alert)
+
 
 def price_alert(coin_name):
     """Checks the current price of a cryptocurrency and returns an alert based on the user set
@@ -63,8 +73,7 @@ def price_alert(coin_name):
     return alert
 
 async def replace_alert(c, symb, min_price, max_price):
-    """Checks the current price of a cryptocurrency and returns an alert based on the user set
-        min and max values
+    """Allows user to replace one alert when the alert dictionary gets "full".
 
     Parameters
     ----------
@@ -96,37 +105,54 @@ async def replace_alert(c, symb, min_price, max_price):
     except asyncio.TimeoutError:
         await c.send("You did not reply on time, replacement will not occur.")
     
-
-@client.command(name="showmyalerts")
-async def show_alerts(ctx):
-    """Checks the current price of a cryptocurrency and returns an alert based on the user set
-        min and max values
-
-    Parameters
-    ----------
-    ctx : str
-        The context
-
-    Returns
-    -------
-    string
-        a string of the alert message to be sent
-    """
-    dict_str = ""
-    for key in alert_thresholds:
-        val = alert_thresholds[key]
-        dict_str += f"{key}  :  Max threshold:  {val[0]}  Min threshold:  {val[1]}  Active  {val[2]} \n"
-    await ctx.send(dict_str)
-
-@client.command(name="setalert")
-async def set_alert(ctx, coin_name, min_price, max_price):
-    """Checks the current price of a cryptocurrency and returns an alert based on the user set
-        min and max values
+@client.command(name="price")
+async def curr_price(ctx, coin_name):
+    """Gets the current price of the given coin.
 
     Parameters
     ----------
     ctx : discord object
-        the context from the previous command
+        the context of the command
+    coin_name : str
+        the name of the coin
+
+    """
+    await ctx.send(CheckPrices.get_crypto_price(CheckPrices.search_coin(coin_name)))
+
+
+
+
+@client.command(name="showmyalerts")
+async def show_alerts(ctx):
+    """Gets all of the currencies in the alert dictionary and sends them to the channel it was
+        called in.
+
+    Parameters
+    ----------
+    ctx : str
+        the context of the command
+
+    Returns
+    -------
+    str
+        a string of the alert message to be sent
+    """
+    dict_str = ""
+    for key in alert_thresholds:
+        if key == "ctx":
+            continue
+        val = alert_thresholds[key]
+        dict_str += f"{key}  :  Max threshold:  {val[0]} || Min threshold:  {val[1]} || Active?  {val[2]} \n"
+    await ctx.send(dict_str)
+
+@client.command(name="setalert")
+async def set_alert(ctx, coin_name, min_price, max_price):
+    """Sets an alert for a crypto with a min and max threshold, if the 
+
+    Parameters
+    ----------
+    ctx : discord object
+        the context of the command
     coin : str
         the name of the cryptocurrency
     min_price : float
@@ -139,22 +165,20 @@ async def set_alert(ctx, coin_name, min_price, max_price):
     try:
         min_price = float(min_price)
         max_price = float(max_price)
-        # curr_price = CheckPrices.get_crypto_price(coin_dict)
         symb = coin_dict["symbol"]
-        if len(alert_thresholds) == 4:
+        if len(alert_thresholds) == 5:
             await ctx.send("You can only track four currencies at a time, would you like to replace one? (reply y or n)")
             def check_msg(msg):
-                return msg.author == ctx.author and msg.channel == ctx.channel and msg.content.lower() in ['y', 'n']
+                return msg.author == ctx.author and msg.channel == ctx.channel and msg.content.lower() in ['y', 'n', 'yes', 'no']
             reply = await client.wait_for("message", check=check_msg)
-            if reply.content.lower() == 'y':
-                print("they want to replace one")
+            if reply.content.lower() == 'y' or reply.content.lower() == 'yes':
                 await replace_alert(ctx, symb, min_price, max_price)
                 return
             else:
-                print("They did not want to replace one")
                 return 
         alert_thresholds[symb] = [min_price, max_price, True]
         await ctx.send(f"Alert for {symb} set with min of {min_price} and max of {max_price}!")
+        alert_thresholds['ctx'] = ctx
         print(alert_thresholds)
         return
         
@@ -163,8 +187,7 @@ async def set_alert(ctx, coin_name, min_price, max_price):
 
 @client.command(name="turnoff")
 async def turnoff_alert(ctx, coin_symb):
-    """Checks the current price of a cryptocurrency and returns an alert based on the user set
-        min and max values
+    """Turns off an alert and sends a message back to the channel.
 
     Parameters
     ----------
@@ -182,6 +205,16 @@ async def turnoff_alert(ctx, coin_symb):
 
 @client.command(name="turnon")
 async def turnon_alert(ctx, coin_symb):
+    """Turns on an alert and sends a message to the channel.
+
+    Parameters
+    ----------
+    ctx : discord object
+        the context from the previous command
+    coin_symb : str
+        the symbol of the cryptocurrency
+   
+    """
     try:
         alert_thresholds[coin_symb][2] = True
         await ctx.send(f"{coin_symb} alerts turned on")
