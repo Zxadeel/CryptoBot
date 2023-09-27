@@ -56,5 +56,6 @@ CryptoBot offers various commands to interact with the bot. Here are some exampl
 - Turn on an alert
 ```!turnon <coinsymbol>```
 
+## Limitations
 
 
