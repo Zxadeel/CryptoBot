@@ -42,5 +42,7 @@ py CryptoBot.py
 
 CryptoBot offers various commands to interact with the bot. Here are some examples:
 
-- Check the price of Bitcoin: !price <name of coin>
+- Check the price of Bitcoin:
+
+`  !price <name of coin>`
 
