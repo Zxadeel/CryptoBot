@@ -22,11 +22,11 @@ To get CryptoBot up and running in your Discord server, follow these steps:
    **Discord.py**
     Windows:
    ```
-      py -3 -m pip install -U discord.py
+   py -3 -m pip install -U discord.py
    ```
     Other:
    ```
-      python3 -m pip install -U discord.py
+   python3 -m pip install -U discord.py
     ```
 5. **Configuration:**
 - Create a Discord Bot on the [Discord Developer Portal](https://discord.com/developers/applications).
@@ -35,7 +35,7 @@ To get CryptoBot up and running in your Discord server, follow these steps:
 
 4. **Run the Bot:**
 ```
-  py CryptoBot.py
+py CryptoBot.py
 ```
 
 ## Usage
