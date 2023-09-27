@@ -46,6 +46,7 @@ CryptoBot offers various commands to interact with the bot. Here are some exampl
 ```!price <coinname>```
 
 - Set an alert. Keep in mind that the maximum allowed alerts is ***four***. If the maximum is reached, you will be asked to replace one of your alerts.
+
 ```!setalert <coinname> <minprice> <maxprice>```
 
 - Show your alerts
