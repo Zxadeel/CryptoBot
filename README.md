@@ -17,7 +17,7 @@ To get CryptoBot up and running in your Discord server, follow these steps:
 ```
   git clone https://github.com/Zxadeel/CryptoBot.git
 ```
-3. **Install Dependencies:**
+2. **Install Dependencies:**
   Make sure you have python and pip installed. Run these commands in a terminal:
    **Discord.py**
     Windows:
@@ -28,12 +28,12 @@ To get CryptoBot up and running in your Discord server, follow these steps:
    ```
    python3 -m pip install -U discord.py
     ```
-4. **Configuration:**
+3. **Configuration:**
 - Create a Discord Bot on the [Discord Developer Portal](https://discord.com/developers/applications).
 - Generate an API key on the [CoinMarketCap API](https://coinmarketcap.com/api/documentation/v1/).
 - Configure your bot token and CoinMarketCap API key in a `.env` file.
 
-5. **Run the Bot:**
+4. **Run the Bot:**
 ```
 py CryptoBot.py
 ```
