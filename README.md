@@ -14,23 +14,29 @@ CryptoBot is a Discord bot that provides real-time cryptocurrency price informat
 To get CryptoBot up and running in your Discord server, follow these steps:
 
 1. **Clone the Repository:**
+```
   git clone https://github.com/Zxadeel/CryptoBot.git
-
-2. **Install Dependencies:**
+```
+3. **Install Dependencies:**
   Make sure you have python and pip installed. Run these commands in a terminal:
    **Discord.py**
     Windows:
+   ```
       py -3 -m pip install -U discord.py
+   ```
     Other:
+   ```
       python3 -m pip install -U discord.py
-
-3. **Configuration:**
+    ```
+5. **Configuration:**
 - Create a Discord Bot on the [Discord Developer Portal](https://discord.com/developers/applications).
 - Generate an API key on the [CoinMarketCap API](https://coinmarketcap.com/api/documentation/v1/).
 - Configure your bot token and CoinMarketCap API key in a `.env` file.
 
 4. **Run the Bot:**
+```
   py CryptoBot.py
+```
 
 ## Usage
 
